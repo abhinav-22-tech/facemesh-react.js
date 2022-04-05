@@ -30,18 +30,18 @@ function App() {
     );
     if (results.multiFaceLandmarks) {
       for (const landmarks of results.multiFaceLandmarks) {
-        connect(canvasCtx, landmarks, Facemesh.FACE_GEOMETRY, {
+        connect(canvasCtx, landmarks, Facemesh.FACEMESH_TESSELATION, {
           color: "#eec1ad",
           lineWidth: 1,
         });
         connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_EYE, {
-          color: "#FF3030",
+          color: "#42f560",
         });
         connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_EYEBROW, {
           color: "#FF3030",
         });
         connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_EYE, {
-          color: "#30FF30",
+          color: "#42f560",
         });
         connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_EYEBROW, {
           color: "#30FF30",
@@ -51,6 +51,12 @@ function App() {
         });
         connect(canvasCtx, landmarks, Facemesh.FACEMESH_LIPS, {
           color: "#e35d6a",
+        });
+        connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_IRIS, {
+          color: "#42f560",
+        });
+        connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_IRIS, {
+          color: "#42f560",
         });
       }
     }
@@ -70,6 +76,7 @@ function App() {
       maxNumFaces: 2,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
+      refineLandmarks: true,
     });
 
     faceMesh.onResults(onResults);
@@ -95,11 +102,11 @@ function App() {
           ref={webcamRef}
           style={{
             position: "absolute",
-            marginLeft: "660",
+            marginLeft: "auto",
             marginRight: "auto",
-            left: 0,
+            left: 660,
             right: 0,
-            // textAlign: "center",
+            textAlign: "center",
             zindex: 9,
             width: 640,
             height: 480,
@@ -107,7 +114,6 @@ function App() {
         />
         <canvas
           ref={canvasRef}
-          className="output_canvas"
           style={{
             position: "absolute",
             marginLeft: "0",
