@@ -1,70 +1,23 @@
 import { FaceMesh } from "@mediapipe/face_mesh";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as Facemesh from "@mediapipe/face_mesh";
 import * as cam from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
+import { ReactP5Wrapper } from "react-p5-wrapper";
+import sketch from "./sketch";
+
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const connect = window.drawConnectors;
   var camera = null;
+  let detections = {};
+
   function onResults(results) {
-    // const video = webcamRef.current.video;
-    const videoWidth = webcamRef.current.video.videoWidth;
-    const videoHeight = webcamRef.current.video.videoHeight;
-
-    // Set canvas width
-    canvasRef.current.width = videoWidth;
-    canvasRef.current.height = videoHeight;
-
-    const canvasElement = canvasRef.current;
-    const canvasCtx = canvasElement.getContext("2d");
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(
-      results.image,
-      0,
-      0,
-      canvasElement.width,
-      canvasElement.height
-    );
-    if (results.multiFaceLandmarks) {
-      for (const landmarks of results.multiFaceLandmarks) {
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_TESSELATION, {
-          color: "#eec1ad",
-          lineWidth: 1,
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_EYE, {
-          color: "#42f560",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_EYEBROW, {
-          color: "#FF3030",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_EYE, {
-          color: "#42f560",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_EYEBROW, {
-          color: "#30FF30",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_FACE_OVAL, {
-          color: "#E0E0E0",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_LIPS, {
-          color: "#e35d6a",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_RIGHT_IRIS, {
-          color: "#42f560",
-        });
-        connect(canvasCtx, landmarks, Facemesh.FACEMESH_LEFT_IRIS, {
-          color: "#42f560",
-        });
-      }
-    }
-    canvasCtx.restore();
+    detections = results;
+    // console.log(detections);
   }
-  // }
 
-  // setInterval(())
   useEffect(() => {
     const faceMesh = new FaceMesh({
       locateFile: (file) => {
@@ -95,8 +48,48 @@ function App() {
       camera.start();
     }
   }, []);
+
+  function sketch(p) {
+    p.setup = () => {
+      p.createCanvas(500, 500);
+      p.colorMode(p.HSB);
+    };
+
+    p.draw = () => {
+      p.clear();
+      // if (p.mouseIsPressed) {
+      //   p.fill(0);
+      // } else {
+      //   p.fill(255);
+      // }
+      // p.ellipse(p.mouseX, p.mouseY, 80, 80);
+      p.fill('lightgreen');
+      // p.riangle(100, 250, 250, 170, 330, 300);;
+      p.strokeWeight(3);
+      if (detections !== undefined) {
+        if (
+          detections.multiFaceLandmarks !== undefined &&
+          detections.multiFaceLandmarks.length >= 1
+        ) {
+          p.faceMesh();
+        }
+      }
+    };
+  
+    p.faceMesh = () => {
+      p.beginShape(p.LINES);
+      for (let j = 0; j < detections.multiFaceLandmarks[0].length; j++) {
+        let x = detections.multiFaceLandmarks[0][j].x * p.width;
+        let y = detections.multiFaceLandmarks[0][j].y * p.height;
+        // console.log(detections.multiFaceLandmarks[0]);
+        p.vertex(x, y);
+      }
+      p.endShape();
+    };
+  }
+
   return (
-    <center>
+    // <center>
       <div className="App">
         <Webcam
           ref={webcamRef}
@@ -112,7 +105,8 @@ function App() {
             height: 480,
           }}
         />
-        <canvas
+        <ReactP5Wrapper sketch={sketch}/>
+        {/* <canvas
           ref={canvasRef}
           style={{
             position: "absolute",
@@ -125,9 +119,9 @@ function App() {
             width: 640,
             height: 480,
           }}
-        ></canvas>
+        ></canvas> */}
       </div>
-    </center>
+    // </center>
   );
 }
 
