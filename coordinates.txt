@@ -1,8 +1,9 @@
  var hc = [[61, 146], [146, 91], [91, 181], [181, 84], [84, 17], [17, 314], [314, 405], [405, 321], [321, 375], [375, 291], [61, 185], [185, 40], [40, 39], [39, 37], [37, 0], [0, 267], [267, 269], [269, 270], [270, 409], [409, 291], [78, 95], [95, 88], [88, 178], [178, 87], [87, 14], [14, 317], [317, 402], [402, 318], [318, 324], [324, 308], [78, 191], [191, 80], [80, 81], [81, 82], [82, 13], [13, 312], [312, 311], [311, 310], [310, 415], [415, 308]],
 
-
 ic = [[263, 249], [249, 390], [390, 373], [373, 374], [374, 380], [380, 381], [381, 382], [382, 362], [263, 466], [466, 388], [388, 387], [387, 386], [386,
-    385], [385, 384], [384, 398], [398, 362]], jc = [[276, 283], [283, 282], [282, 295], [295, 285], [300, 293], [293, 334], [334, 296], [296, 336]], 
+    385], [385, 384], [384, 398], [398, 362]],
+
+jc = [[276, 283], [283, 282], [282, 295], [295, 285], [300, 293], [293, 334], [334, 296], [296, 336]], 
 
 kc = [[33, 7], [7, 163], [163, 144], [144, 145], [145, 153], [153, 154], [154, 155], [155, 133], [33, 246], [246, 161], [161, 160], [160, 159], [159, 158], [158, 157], [157, 173], [173, 133]], 
 
@@ -21,5 +22,52 @@ P("FACEMESH_RIGHT_EYEBROW", lc);
 P("FACEMESH_RIGHT_IRIS", [[469, 470], [470, 471], [471, 472], [472, 469]]);
 
 
+
+
+
+let video;
+let poseNet;
+let noseX = 0;
+let noseY = 0;
+let eyeX = 0;
+let eyeY = 0;
+
+function setup() {
+  createCanvas(640, 400);
+  video = createCapture(VIDEO);
+  video.hide();
+  poseNet = ml5.poseNet(video, modelReady);
+  poseNet.on("pose", gotPoses);
+}
+
+function gotPoses(poses){
+  console.log(poses);
+  if(poses.length > 0){
+    let nX = poses[0].pose.keypoints[0].position.x;
+    let nY = poses[0].pose.keypoints[0].position.y;
+    let eX = poses[0].pose.keypoints[1].position.x;
+    let eY = poses[0].pose.keypoints[1].position.y;
+        
+    noseX = lerp(noseX, nX, 0.5);
+    noseY = lerp(noseY, nY, 0.5);
+    eyeX = lerp(eyeX, eX, 0.5);
+    eyeY = lerp(eyeY, eY, 0.5);
+  
+  }
+}
+
+function modelReady(){
+  console.log("model ready");
+}
+
+
+function draw() {
+  image(video, 0, 0);
+  let d = dist(noseX, noseY, eyeX, eyeY);
+  fill(255, 0, 0);
+  ellipse(noseX, noseY, d);
+  // fill(0, 0, 255);
+  // ellipse(eyeX, eyeY, 10);
+}
 
 
