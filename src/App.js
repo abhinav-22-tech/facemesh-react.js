@@ -24,10 +24,6 @@ function App() {
     [471, 472],
     [472, 469],
   ];
-  let rightEye = [
-    [145, 153],
-    [159, 158],
-  ];
 
   function onResults(results) {
     detections = results;
@@ -87,30 +83,40 @@ function App() {
 
     p.faceMesh = () => {
       // Right Eye
-      let reyex = detections.multiFaceLandmarks[0][33].x * p.width;
-      let reyey = detections.multiFaceLandmarks[0][33].y * p.height;
-      p.ellipse(reyex, reyey, 10);
+      // let centerCoordinatesRightEye = [0, 0];
+      // centerCoordinatesRightEye = p.rightEye();
+      // let rEyeX = centerCoordinatesRightEye[0];
+      // let rEyeY = centerCoordinatesRightEye[1];
+      // // let rEyeR = centerCoordinatesRightEye[2];
+      // p.ellipse(rEyeX, rEyeY, 30);
 
       // Left Eye
-      let leyex = detections.multiFaceLandmarks[0][263].x * p.width;
-      let leyey = detections.multiFaceLandmarks[0][263].y * p.height;
-      p.ellipse(leyex, leyey, 30);
+      let leyex = detections.multiFaceLandmarks[0][373].x * p.width;
+      let leyey = detections.multiFaceLandmarks[0][373].y * p.height;
 
       // Left Iris
-      let centerCoordinatesLeftIris = [0, 0];
+      let centerCoordinatesLeftIris = [0, 0, 0];
       centerCoordinatesLeftIris = p.leftIris();
       let lIrisX = centerCoordinatesLeftIris[0];
       let lIrisY = centerCoordinatesLeftIris[1];
       let lIrisR = centerCoordinatesLeftIris[2];
+      p.fill("#2C323A");
+      p.ellipse(leyex, leyey, lIrisR * 4);
       p.fill("white");
       p.ellipse(lIrisX, lIrisY, lIrisR * 2);
 
+      // Right Eye
+      let reyex = detections.multiFaceLandmarks[0][144].x * p.width;
+      let reyey = detections.multiFaceLandmarks[0][144].y * p.height;
+
       // Right Iris
-      let centerCoordinatesRightIris = [0, 0];
+      let centerCoordinatesRightIris = [0, 0, 0];
       centerCoordinatesRightIris = p.rightIris();
       let rIrisX = centerCoordinatesRightIris[0];
       let rIrisY = centerCoordinatesRightIris[1];
       let rIrisR = centerCoordinatesRightIris[2];
+      p.fill("#2C323A");
+      p.ellipse(reyex, reyey, rIrisR * 4);
       p.fill("white");
       p.ellipse(rIrisX, rIrisY, rIrisR * 2);
 
