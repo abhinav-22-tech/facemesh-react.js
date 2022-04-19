@@ -82,13 +82,11 @@ function App() {
     };
 
     p.faceMesh = () => {
-      // Right Eye
-      // let centerCoordinatesRightEye = [0, 0];
-      // centerCoordinatesRightEye = p.rightEye();
-      // let rEyeX = centerCoordinatesRightEye[0];
-      // let rEyeY = centerCoordinatesRightEye[1];
-      // // let rEyeR = centerCoordinatesRightEye[2];
-      // p.ellipse(rEyeX, rEyeY, 30);
+      // Face
+      let faceX = detections.multiFaceLandmarks[0][1].x * p.width;
+      let faceY = detections.multiFaceLandmarks[0][1].y * p.height;
+      p.fill("#f1c27d");
+      p.ellipse(faceX, faceY, 300);
 
       // Left Eye
       let leyex = detections.multiFaceLandmarks[0][373].x * p.width;
