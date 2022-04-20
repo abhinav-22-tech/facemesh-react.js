@@ -12,17 +12,29 @@ function App() {
   const connect = window.drawConnectors;
   var camera = null;
   let detections = {};
-  let leftIris = [
-    [474, 475],
-    [475, 476],
-    [476, 477],
-    [477, 474],
+  let leftEye = [
+    263, 249, 390, 373, 374, 380, 381, 382, 362, 263, 466, 388, 387, 386, 385,
+    384, 398, 362,
   ];
-  let rightIris = [
-    [469, 470],
-    [470, 471],
-    [471, 472],
-    [472, 469],
+  let rightEye = [
+    33, 7, 163, 144, 145, 153, 154, 155, 133, 33, 246, 161, 160, 159, 158, 157,
+    173, 133,
+  ];
+  let leftIris = [474, 475, 476, 477, 474];
+  let rightIris = [469, 470, 471, 472, 469];
+  let leftEyeBrow = [276, 283, 282, 295, 285, 300, 293, 334, 296, 336];
+  let rightEyeBrow = [46, 53, 52, 65, 55, 70, 63, 105, 66, 107];
+  let lips = [
+    61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 61, 185, 40, 39, 37, 0,
+    267, 269, 270, 409, 291, 78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308,
+    78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308,
+  ];
+  let nose = [5, 275, 94];
+  let foreHeadSpot = [151, 9, 8];
+  let faceBorder = [
+    10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379,
+    378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127,
+    162, 21, 54, 103, 67, 109, 10,
   ];
 
   function onResults(results) {
@@ -64,12 +76,11 @@ function App() {
   function sketch(p) {
     p.setup = () => {
       p.createCanvas(500, 500);
-      p.colorMode(p.HSB);
+      // p.colorMode(p.HSB);
     };
 
     p.draw = () => {
       p.clear();
-      p.fill("black");
       p.strokeWeight(3);
       if (detections !== undefined) {
         if (
@@ -83,138 +94,118 @@ function App() {
 
     p.faceMesh = () => {
       // Face
-      let faceX = detections.multiFaceLandmarks[0][1].x * p.width;
-      let faceY = detections.multiFaceLandmarks[0][1].y * p.height;
       p.fill("#f1c27d");
-      p.ellipse(faceX, faceY, 300);
+      p.beginShape();
+      for (let i = 0; i < faceBorder.length; i++) {
+        let faceX = detections.multiFaceLandmarks[0][faceBorder[i]].x * p.width;
+        let faceY =
+          detections.multiFaceLandmarks[0][faceBorder[i]].y * p.height;
+        p.vertex(faceX, faceY);
+      }
+      p.endShape();
 
       // Left Eye
-      let leyex = detections.multiFaceLandmarks[0][373].x * p.width;
-      let leyey = detections.multiFaceLandmarks[0][373].y * p.height;
-
-      // Left Iris
-      let centerCoordinatesLeftIris = [0, 0, 0];
-      centerCoordinatesLeftIris = p.leftIris();
-      let lIrisX = centerCoordinatesLeftIris[0];
-      let lIrisY = centerCoordinatesLeftIris[1];
-      let lIrisR = centerCoordinatesLeftIris[2];
-      p.fill("#2C323A");
-      p.ellipse(leyex, leyey, lIrisR * 4);
       p.fill("white");
-      p.ellipse(lIrisX, lIrisY, lIrisR * 2);
+      p.noStroke();
+      p.beginShape();
+      for (let i = 0; i < leftEye.length; i++) {
+        let leyex = detections.multiFaceLandmarks[0][leftEye[i]].x * p.width;
+        let leyey = detections.multiFaceLandmarks[0][leftEye[i]].y * p.height;
+        p.vertex(leyex, leyey);
+      }
+      p.endShape();
 
       // Right Eye
-      let reyex = detections.multiFaceLandmarks[0][144].x * p.width;
-      let reyey = detections.multiFaceLandmarks[0][144].y * p.height;
+      p.fill("white");
+      p.noStroke();
+      p.beginShape();
+      for (let i = 0; i < rightEye.length; i++) {
+        let reyex = detections.multiFaceLandmarks[0][rightEye[i]].x * p.width;
+        let reyey = detections.multiFaceLandmarks[0][rightEye[i]].y * p.height;
+        p.vertex(reyex, reyey);
+      }
+      p.endShape();
+
+      // Left Iris
+      p.fill("black");
+      p.beginShape();
+      for (let i = 0; i < leftIris.length; i++) {
+        let lIrisX = detections.multiFaceLandmarks[0][leftIris[i]].x * p.width;
+        let lIrisY = detections.multiFaceLandmarks[0][leftIris[i]].y * p.height;
+        p.vertex(lIrisX, lIrisY);
+      }
+      p.endShape();
 
       // Right Iris
-      let centerCoordinatesRightIris = [0, 0, 0];
-      centerCoordinatesRightIris = p.rightIris();
-      let rIrisX = centerCoordinatesRightIris[0];
-      let rIrisY = centerCoordinatesRightIris[1];
-      let rIrisR = centerCoordinatesRightIris[2];
-      p.fill("#2C323A");
-      p.ellipse(reyex, reyey, rIrisR * 4);
-      p.fill("white");
-      p.ellipse(rIrisX, rIrisY, rIrisR * 2);
-
-      p.endShape();
-    };
-
-    p.leftIris = () => {
-      let circlePoints = [
-        [0, 0],
-        [0, 0],
-        [0, 0],
-        [0, 0],
-      ];
-      for (let i = 0; i < leftIris.length; i++) {
-        // console.log(leftIris[i][0]);
-        for (let j = 0; j <= 1; j++) {
-          let lIrisX =
-            detections.multiFaceLandmarks[0][leftIris[i][j]].x * p.width;
-          let lIrisY =
-            detections.multiFaceLandmarks[0][leftIris[i][j]].y * p.width;
-          circlePoints[i][0] = lIrisX;
-          circlePoints[i][1] = lIrisY;
-        }
-      }
-      let centerCoordinates = findCircle(circlePoints);
-      return centerCoordinates;
-    };
-
-    p.rightIris = () => {
-      let circlePoints = [
-        [0, 0],
-        [0, 0],
-        [0, 0],
-        [0, 0],
-      ];
+      p.fill("black");
+      p.beginShape();
       for (let i = 0; i < rightIris.length; i++) {
-        // console.log(leftIris[i][0]);
-        for (let j = 0; j <= 1; j++) {
-          let rIrisX =
-            detections.multiFaceLandmarks[0][rightIris[i][j]].x * p.width;
-          let rIrisY =
-            detections.multiFaceLandmarks[0][rightIris[i][j]].y * p.width;
-          circlePoints[i][0] = rIrisX;
-          circlePoints[i][1] = rIrisY;
-        }
+        let rIrisX = detections.multiFaceLandmarks[0][rightIris[i]].x * p.width;
+        let rIrisY =
+          detections.multiFaceLandmarks[0][rightIris[i]].y * p.height;
+        p.vertex(rIrisX, rIrisY);
       }
-      let centerCoordinates = findCircle(circlePoints);
-      return centerCoordinates;
-    };
+      p.endShape();
 
-    let findCircle = (circlePoints) => {
-      let x1, y1, x2, y2, x3, y3;
-      x1 = circlePoints[0][0];
-      y1 = circlePoints[0][1];
-      x2 = circlePoints[1][0];
-      y2 = circlePoints[1][1];
-      x3 = circlePoints[2][0];
-      y3 = circlePoints[2][1];
+      // Left EyeBrow
+      p.fill("#2C323A");
+      p.beginShape();
+      for (let i = 0; i < leftEyeBrow.length; i++) {
+        let lEyeBrowX =
+          detections.multiFaceLandmarks[0][leftEyeBrow[i]].x * p.width;
+        let lEyeBrowY =
+          detections.multiFaceLandmarks[0][leftEyeBrow[i]].y * p.height;
+        p.vertex(lEyeBrowX, lEyeBrowY);
+      }
+      p.endShape();
 
-      let x12 = x1 - x2;
-      let x13 = x1 - x3;
+      // Right EyeBrow
+      p.fill("#2C323A");
+      p.beginShape();
+      for (let i = 0; i < rightEyeBrow.length; i++) {
+        let rEyeBrowX =
+          detections.multiFaceLandmarks[0][rightEyeBrow[i]].x * p.width;
+        let rEyeBrowY =
+          detections.multiFaceLandmarks[0][rightEyeBrow[i]].y * p.height;
+        p.vertex(rEyeBrowX, rEyeBrowY);
+      }
+      p.endShape();
 
-      let y12 = y1 - y2;
-      let y13 = y1 - y3;
+      // Lips
+      p.fill("#e56d7e");
+      p.stroke(255);
+      p.strokeWeight(1);
+      p.beginShape();
+      for (let i = 0; i < lips.length; i++) {
+        let lipsX = detections.multiFaceLandmarks[0][lips[i]].x * p.width;
+        let lipsY = detections.multiFaceLandmarks[0][lips[i]].y * p.height;
+        p.vertex(lipsX, lipsY);
+      }
+      p.endShape();
 
-      let y31 = y3 - y1;
-      let y21 = y2 - y1;
+      // Nose
+      p.fill("#6b4423");
+      p.stroke(255);
+      p.strokeWeight(1);
+      p.beginShape();
+      for (let i = 0; i < nose.length; i++) {
+        let noseX = detections.multiFaceLandmarks[0][nose[i]].x * p.width;
+        let noseY = detections.multiFaceLandmarks[0][nose[i]].y * p.height;
+        p.vertex(noseX, noseY);
+      }
+      p.endShape();
 
-      let x31 = x3 - x1;
-      let x21 = x2 - x1;
-
-      //x1^2 - x3^2
-      let sx13 = Math.pow(x1, 2) - Math.pow(x3, 2);
-
-      // y1^2 - y3^2
-      let sy13 = Math.pow(y1, 2) - Math.pow(y3, 2);
-
-      let sx21 = Math.pow(x2, 2) - Math.pow(x1, 2);
-      let sy21 = Math.pow(y2, 2) - Math.pow(y1, 2);
-
-      let f =
-        (sx13 * x12 + sy13 * x12 + sx21 * x13 + sy21 * x13) /
-        (2 * (y31 * x12 - y21 * x13));
-      let g =
-        (sx13 * y12 + sy13 * y12 + sx21 * y13 + sy21 * y13) /
-        (2 * (x31 * y12 - x21 * y13));
-
-      let c = -Math.pow(x1, 2) - Math.pow(y1, 2) - 2 * g * x1 - 2 * f * y1;
-
-      // eqn of circle be
-      // x^2 + y^2 + 2*g*x + 2*f*y + c = 0
-      // where centre is (h = -g, k = -f) and radius r
-      // as r^2 = h^2 + k^2 - c
-      let h = -g;
-      let k = -f;
-      let sqr_of_r = h * h + k * k - c;
-
-      let r = Math.sqrt(sqr_of_r);
-      let centerCoordinates = [h, k, r];
-      return centerCoordinates;
+      // Fore Head Spot
+      p.fill("red");
+      p.stroke(255);
+      p.strokeWeight(3);
+      p.beginShape(p.TESS);
+      for (let i = 0; i < foreHeadSpot.length; i++) {
+        let foreHeadSpotX = detections.multiFaceLandmarks[0][foreHeadSpot[i]].x * p.width;
+        let foreHeadSpotY = detections.multiFaceLandmarks[0][foreHeadSpot[i]].y * p.height;
+        p.vertex(foreHeadSpotX, foreHeadSpotY);
+      }
+      p.endShape();
     };
   }
 
