@@ -4,7 +4,6 @@ import * as Facemesh from "@mediapipe/face_mesh";
 import * as cam from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
 import { ReactP5Wrapper } from "react-p5-wrapper";
-import sketch from "./sketch";
 
 function App() {
   const webcamRef = useRef(null);
