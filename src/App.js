@@ -1,12 +1,11 @@
-import { FaceMesh } from "@mediapipe/face_mesh";
-import React, { useRef, useEffect, useState } from "react";
-import * as Facemesh from "@mediapipe/face_mesh";
 import * as cam from "@mediapipe/camera_utils";
-import Webcam from "react-webcam";
+import { FaceMesh } from "@mediapipe/face_mesh";
+import React, { useEffect, useRef } from "react";
 import { ReactP5Wrapper } from "react-p5-wrapper";
 
 function App() {
   const webcamRef = useRef(null);
+
   const canvasRef = useRef(null);
   const connect = window.drawConnectors;
   var camera = null;
@@ -61,9 +60,9 @@ function App() {
       typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null
     ) {
-      camera = new cam.Camera(webcamRef.current.video, {
+      camera = new cam.Camera(webcamRef.current, {
         onFrame: async () => {
-          await faceMesh.send({ image: webcamRef.current.video });
+          await faceMesh.send({ image: webcamRef.current });
         },
         width: 640,
         height: 480,
@@ -200,8 +199,10 @@ function App() {
       p.strokeWeight(3);
       p.beginShape(p.TESS);
       for (let i = 0; i < foreHeadSpot.length; i++) {
-        let foreHeadSpotX = detections.multiFaceLandmarks[0][foreHeadSpot[i]].x * p.width;
-        let foreHeadSpotY = detections.multiFaceLandmarks[0][foreHeadSpot[i]].y * p.height;
+        let foreHeadSpotX =
+          detections.multiFaceLandmarks[0][foreHeadSpot[i]].x * p.width;
+        let foreHeadSpotY =
+          detections.multiFaceLandmarks[0][foreHeadSpot[i]].y * p.height;
         p.vertex(foreHeadSpotX, foreHeadSpotY);
       }
       p.endShape();
@@ -209,9 +210,8 @@ function App() {
   }
 
   return (
-    // <center>
     <div className="App">
-      <Webcam
+      <video
         ref={webcamRef}
         style={{
           position: "absolute",
@@ -226,22 +226,7 @@ function App() {
         }}
       />
       <ReactP5Wrapper sketch={sketch} />
-      {/* <canvas
-          ref={canvasRef}
-          style={{
-            position: "absolute",
-            marginLeft: "0",
-            marginRight: "0",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zindex: 9,
-            width: 640,
-            height: 480,
-          }}
-        ></canvas> */}
     </div>
-    // </center>
   );
 }
 
