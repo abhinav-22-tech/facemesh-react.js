@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/facemesh-react.js/static/js/main.6bec3c98.js",
+    "main.js": "/facemesh-react.js/static/js/main.ffbb9c49.js",
     "index.html": "/facemesh-react.js/index.html",
-    "main.6bec3c98.js.map": "/facemesh-react.js/static/js/main.6bec3c98.js.map"
+    "main.ffbb9c49.js.map": "/facemesh-react.js/static/js/main.ffbb9c49.js.map"
   },
   "entrypoints": [
-    "static/js/main.6bec3c98.js"
+    "static/js/main.ffbb9c49.js"
   ]
 }
